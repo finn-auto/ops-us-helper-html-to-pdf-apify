@@ -12,9 +12,8 @@ if (!input || typeof input.url !== "string") {
 }
 
 log.info("Launching headless Chrome...");
-const browser = await launchPuppeteer();
+const browser = await launchPuppeteer({pipe: true});
 const page = await browser.newPage();
-await page.setDefaultNavigationTimeout(0)
 
 log.info(`Loading page (url: ${input.url})...`);
 await page.goto(input.url, { waitUntil: "networkidle0" });
