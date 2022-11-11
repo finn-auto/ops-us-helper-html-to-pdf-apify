@@ -12,7 +12,17 @@ if (!input || typeof input.url !== "string") {
 }
 
 log.info("Launching headless Chrome...");
-const browser = await launchPuppeteer({pipe: true});
+const launchContext = {
+  // Apify helpers
+  useChrome: true,
+  // Native Puppeteer options
+  launchOptions: {
+      pipe: true,
+      headless: true,
+      args: ['--some-flag'],
+  }
+}
+const browser = await launchPuppeteer(launchContext);
 const page = await browser.newPage();
 
 log.info(`Loading page (url: ${input.url})...`);
