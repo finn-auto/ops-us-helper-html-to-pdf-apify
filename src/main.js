@@ -14,6 +14,7 @@ if (!input || typeof input.url !== "string") {
 log.info("Launching headless Chrome...");
 const browser = await launchPuppeteer();
 const page = await browser.newPage();
+await page.setDefaultNavigationTimeout(0)
 
 log.info(`Loading page (url: ${input.url})...`);
 await page.goto(input.url, { waitUntil: "networkidle0" });
@@ -26,10 +27,10 @@ if (input.sleepMillis > 0) {
 
 const opts = input.pdfOptions || {};
 delete opts.path; // Don't store to file
-console.log(`Printing to PDF (options: ${JSON.stringify(opts)})...`);
+log.info(`Printing to PDF (options: ${JSON.stringify(opts)})...`);
 const pdfBuffer = await page.pdf(opts);
 
-console.log(`Saving PDF (size: ${pdfBuffer.length} bytes) to output...`);
+log.info(`Saving PDF (size: ${pdfBuffer.length} bytes) to output...`);
 await Actor.setValue("OUTPUT", pdfBuffer, { contentType: "application/pdf" });
 
 const storeId = process.env.APIFY_DEFAULT_KEY_VALUE_STORE_ID;
