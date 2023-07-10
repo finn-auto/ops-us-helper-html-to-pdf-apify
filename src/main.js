@@ -1,7 +1,5 @@
 import { Actor } from "apify";
 import { launchPuppeteer, log } from "crawlee";
-// Original source code: https://apify.com/jancurn/url-to-pdf/source-code
-// This is an optimization for printing with waitUntil option
 
 await Actor.init();
 
@@ -13,13 +11,11 @@ if (!input || typeof input.url !== "string") {
 
 log.info("Launching headless Chrome...");
 const launchContext = {
-  // Apify helpers
   useChrome: true,
-  // Native Puppeteer options
   launchOptions: {
-      pipe: true,
-      headless: true,
-      args: ['--some-flag'],
+    pipe: true,
+    headless: true,
+    args: ['--some-flag'],
   }
 }
 const browser = await launchPuppeteer(launchContext);
@@ -33,6 +29,18 @@ if (input.sleepMillis > 0) {
   log.info(`Sleeping ${input.sleepMillis} millis...`);
   await new Promise((resolve) => setTimeout(resolve, input.sleepMillis));
 }
+
+// Modified code starts here: Removing the element with specified id from the DOM
+if (input.htmlIdToExclude) {
+  log.info(`Removing the element with id '${input.htmlIdToExclude}'...`);
+  await page.evaluate((htmlId) => {
+      const element = document.querySelector(`#${htmlId}`);
+      if (element) {
+          element.remove();
+      }
+  }, input.htmlIdToExclude);
+}
+// Modified code ends here
 
 const opts = input.pdfOptions || {};
 delete opts.path; // Don't store to file
